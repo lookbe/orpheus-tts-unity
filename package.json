@@ -1,0 +1,26 @@
+{
+    "name": "ai.lookbe.orpheustts",
+    "version": "0.0.1",
+    "displayName": "Orpheus TTS Unity",
+    "description": "Orpheus TTS for Unity",
+    "unity": "2021.3",
+    "keywords": [
+        "orpheus",
+        "tts",
+        "ai"
+    ],
+    "author": {
+        "name": "lookbe"
+    },
+	"samples": [
+    {
+	  "displayName": "Basic TTS",
+	  "description": "Shows the basic tts usage.",
+	  "path": "Samples~/BasicTTS"
+    }],
+	"dependencies": {
+		"ai.lookbe.llamacpp": "https://github.com/lookbe/llama-cpp-unity.git",
+		"com.github.asus4.onnxruntime": "https://github.com/asus4/onnxruntime-unity.git?path=/com.github.asus4.onnxruntime",
+		"com.github.asus4.onnxruntime.unity": "https://github.com/asus4/onnxruntime-unity.git?path=/com.github.asus4.onnxruntime.unity"
+	}
+}
