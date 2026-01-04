@@ -47,9 +47,7 @@ Open your project's `Packages/manifest.json` and update it to include the scoped
     "ai.lookbe.llamacpp": "https://github.com/lookbe/llama-cpp-unity.git",
     "ai.lookbe.orpheustts": "https://github.com/lookbe/orpheus-tts-unity.git",
 
-    ...
-    "other dependencies"
-    ...
+    ... other dependencies
   }
 }
 ```
