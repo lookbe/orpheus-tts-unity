@@ -2,8 +2,21 @@
 
 A Unity 6 integration for [Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS). This package provides a high-performance, local neural text-to-speech solution leveraging ONNX Runtime and Llama.cpp.
 
+---
+
+## 🎭 Human-Like Speech & Low Latency
+
+Orpheus TTS is designed for **real-time conversational AI** and interactive storytelling. Unlike traditional robotic TTS, this package provides:
+
+* **Exceptional Realism:** Built on a Llama-3B backbone, the model understands context, resulting in natural intonation, rhythm, and empathetic delivery.
+* **Guided Emotions:** Support for specialized tags (e.g., `<laugh>`, `<sigh>`, `<gasp>`) allows you to inject genuine human emotion into the runtime speech.
+* **Ultra-Low Latency:** Optimized for streaming, the system is capable of very low-latency audio generation, making it ideal for live runtime streaming and interactive NPCs.
+* **Consumer GPU Ready:** The implementation is designed to run efficiently on consumer-grade GPUs with as little as **8GB VRAM**.
+* **Local & Private:** Everything runs on your machine. No API keys, no subscription fees, and no data leaves the user's device.
+
+---
+
 ## ⚠️ Hardware & Platform Support
-To run this on consumer GPUs, please note the current technical constraints:
 * **API Support:** Currently supports **Vulkan** only.
 * **Platform:** **Windows** (Vulkan backend).
 
@@ -62,3 +75,21 @@ You must download the following two models separately:
 3.  **Run:** Press Play. The system will initialize the Vulkan backend on your GPU.
 
 > **Note:** You can extend the component script to use `Application.streamingAssetsPath` if you wish to bundle models with your build, but the core component requires absolute paths for the initial backend load.
+
+---
+
+# Credits
+
+* **[Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)** Developed by **Canopy AI** – A high-quality text-to-speech engine.
+    
+* **[onnxruntime-unity](https://github.com/asus4/onnxruntime-unity)** Developed by **asus4** – ONNX Runtime integration for the Unity engine.
+
+---
+
+## ☕ Support the Developer
+
+If this helps you, consider supporting me:
+
+[<img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" width="200">](https://www.buymeacoffee.com/lookbe)
+
+
