@@ -11,7 +11,7 @@ Orpheus TTS is designed for **real-time conversational AI** and interactive stor
 * **Exceptional Realism:** Built on a Llama-3B backbone, the model understands context, resulting in natural intonation, rhythm, and empathetic delivery.
 * **Guided Emotions:** Support for specialized tags (e.g., `<laugh>`, `<sigh>`, `<gasp>`) allows you to inject genuine human emotion into the runtime speech.
 * **Ultra-Low Latency:** Optimized for streaming, the system is capable of very low-latency audio generation, making it ideal for live runtime streaming and interactive NPCs.
-* **Consumer GPU Ready:** The implementation is designed to run efficiently on consumer-grade GPUs with as little as **8GB VRAM**.
+* **Consumer GPU Ready:** The implementation is designed to run efficiently on consumer-grade GPUs with as little as **6GB VRAM**.
 * **Local & Private:** Everything runs on your machine. No API keys, no subscription fees, and no data leaves the user's device.
 
 ---
