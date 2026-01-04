@@ -35,7 +35,7 @@ Open your project's `Packages/manifest.json` and update it to include the scoped
   "scopedRegistries": [
     {
       "name": "npm",
-      "url": "[https://registry.npmjs.com](https://registry.npmjs.com)",
+      "url": "https://registry.npmjs.com",
       "scopes": [
         "com.github.asus4"
       ]
