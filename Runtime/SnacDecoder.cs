@@ -46,6 +46,16 @@ namespace OrpheusTTS
         async void OnDestroy()
         {
             await BackgroundStop();
+
+            // Wait for all remaining background tasks to complete
+            List<Task> remainingTasks = _backgroundTasks.Values.ToList();
+            
+            if (remainingTasks.Count > 0)
+            {
+                Debug.Log($"Waiting for {remainingTasks.Count} remaining background tasks to finish...");
+                await Task.WhenAll(remainingTasks);
+            }
+
             FreeModel();
         }
 
@@ -78,18 +88,13 @@ namespace OrpheusTTS
         private ulong _inputIndex = 0;
         private ulong _nextExpectedIndex = 0;
         private Dictionary<ulong, byte[]> _responseCache = new Dictionary<ulong, byte[]>();
-
-        public void Reset()
-        {
-            _inputIndex = 0;
-            _nextExpectedIndex = 0;
-            _responseCache.Clear();
-        }
+        private Dictionary<ulong, Task> _backgroundTasks = new Dictionary<ulong, Task>();
 
         public void InitModel()
         {
             if (string.IsNullOrEmpty(modelPath))
             {
+                Debug.LogError("model path not set");
                 return;
             }
 
@@ -164,29 +169,33 @@ namespace OrpheusTTS
             }
 
             status = ModelStatus.Generate;
-            ulong index = _inputIndex++;
-            _responseCache[index] = null;
-            RunBackgroundUnchecked(new DecodePayload() { Frames = new List<int>(frames), Index = index }, RunPrompt);
+            RunBackgroundDecode(frames);
         }
 
-        protected void RunBackgroundUnchecked<T>(T payload, Action<T, CancellationToken> work) where T : IBackgroundPayload
+        protected void RunBackgroundDecode(List<int> frames)
         {
-            CancellationTokenSource cts = new CancellationTokenSource();
+            ulong index = _inputIndex++;
+            _responseCache[index] = null;
 
-            Task.Run(() =>
+            CancellationTokenSource cts = new CancellationTokenSource();
+            DecodePayload payload = new DecodePayload() { Frames = new List<int>(frames), Index = index };
+
+            var task = Task.Run(() =>
             {
                 try
                 {
-                    work(payload, cts.Token);
+                    RunDecode(payload, cts.Token);
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"Error in background task: {ex.Message}");
                 }
             }, cts.Token);
+
+            _backgroundTasks[index] = task;
         }
 
-        void RunPrompt(DecodePayload payload, CancellationToken cts)
+        void RunDecode(DecodePayload payload, CancellationToken cts)
         {
             List<int> multiframe = payload.Frames;
 
@@ -225,7 +234,7 @@ namespace OrpheusTTS
                 bool invalid = codes0Array.Any(v => v < 0 || v > 4096) || codes1Array.Any(v => v < 0 || v > 4096) || codes2Array.Any(v => v < 0 || v > 4096);
                 if (invalid)
                 {
-                    PostResponseOrdered(payload.Index, new byte[0]);
+                    PostResponse(payload.Index, new byte[0]);
                     return;
                 }
 
@@ -280,43 +289,48 @@ namespace OrpheusTTS
                     var byteArray = new byte[sliceLength * sizeof(short)];
                     Buffer.BlockCopy(audioInt16, 0, byteArray, 0, byteArray.Length);
 
-                    PostResponseOrdered(payload.Index, byteArray);
+                    PostResponse(payload.Index, byteArray);
                 }
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"An unexpected error occurred: {ex.Message}");
-                PostResponseOrdered(payload.Index, new byte[0]);
+                PostResponse(payload.Index, new byte[0]);
             }
         }
 
-        private void PostResponseOrdered(ulong index, byte[] response)
+        void PostResponse(ulong index, byte[] response)
         {
-            unityContext?.Post(_ => 
-            {
-                _responseCache[index] = response;
-
-                while (true)
-                {
-                    _responseCache.TryGetValue(_nextExpectedIndex, out byte[] nextResponse);
-                    if (nextResponse == null)
-                    {
-                        break;
-                    }
-
-                    float[] audioData = ConvertToAudioData(nextResponse);
-                    OnResponseGenerated?.Invoke(audioData);
-
-                    _responseCache.Remove(_nextExpectedIndex);
-                    _nextExpectedIndex++;
-                }
-
-                if (_responseCache.Count == 0)
-                {
-                    status = ModelStatus.Ready;
-                }
-            }, null);
+            unityContext?.Post(_ => ProcessResponse(index, response), null);
         }
+
+        // process this on main unity thread
+        void ProcessResponse(ulong index, byte[] response)
+        {
+            _backgroundTasks.Remove(index);
+            _responseCache[index] = response;
+
+            while (true)
+            {
+                _responseCache.TryGetValue(_nextExpectedIndex, out byte[] nextResponse);
+                if (nextResponse == null)
+                {
+                    break;
+                }
+
+                float[] audioData = ConvertToAudioData(nextResponse);
+                OnResponseGenerated?.Invoke(audioData);
+
+                _responseCache.Remove(_nextExpectedIndex);
+                _nextExpectedIndex++;
+            }
+
+            if (_responseCache.Count == 0)
+            {
+                status = ModelStatus.Ready;
+            }
+        }
+
     }
 
 }

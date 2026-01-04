@@ -46,13 +46,14 @@ public class BasicTTS : MonoBehaviour
                 break;
             case ModelStatus.Ready:
                 {
+                    sendButton.GetComponentInChildren<TMP_Text>().text = "SEND";
                     sendButton.interactable = true;
                     ClearInput();
                 }
                 break;
             case ModelStatus.Generate:
                 {
-                    sendButton.interactable = false;
+                    sendButton.GetComponentInChildren<TMP_Text>().text = "STOP";
                 }
                 break;
             case ModelStatus.Error:
@@ -72,12 +73,20 @@ public class BasicTTS : MonoBehaviour
     {
         if (tts)
         {
-            string message = chatInputField.text;
-            if (!string.IsNullOrEmpty(message))
+            if (tts.status == ModelStatus.Ready)
             {
-                chatHistory.text += "tts: " + message + "\n";
-                tts.Prompt(message);
-                ClearInput();
+                string message = chatInputField.text;
+                if (!string.IsNullOrEmpty(message))
+                {
+                    chatHistory.text += "tts: " + message + "\n";
+                    tts.Prompt(message);
+                    ClearInput();
+                }
+            }
+            else
+            {
+                sendButton.interactable = false;
+                tts.Stop();
             }
         }
     }

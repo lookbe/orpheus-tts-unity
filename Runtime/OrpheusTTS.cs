@@ -121,6 +121,18 @@ namespace OrpheusTTS
             status = ModelStatus.Ready;
         }
 
+        public void Stop()
+        {
+            if (status != ModelStatus.Generate)
+            {
+                Debug.Log("already stopped");
+                return;
+            }
+
+            orpheus.Stop();
+        }
+
+
         // harcoded value from snac decoder
         private const int SampleRate = 24000;
         private const int Channels = 1;
