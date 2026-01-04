@@ -7,6 +7,7 @@ public class BasicTTS : MonoBehaviour
 {
     public OrpheusTTS.OrpheusTTS tts;
 
+    public TMP_Text chatHistory;
     public TMP_InputField chatInputField;
     public Button sendButton;
 
@@ -74,6 +75,7 @@ public class BasicTTS : MonoBehaviour
             string message = chatInputField.text;
             if (!string.IsNullOrEmpty(message))
             {
+                chatHistory.text += "tts: " + message + "\n";
                 tts.Prompt(message);
                 ClearInput();
             }

@@ -1,12 +1,13 @@
-using UnityEngine;
+using LlamaCpp;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LlamaCpp;
+using UnityEngine;
 
 namespace OrpheusTTS
 {
@@ -71,14 +72,19 @@ namespace OrpheusTTS
             return samples;
         }
 
-        private void PostResponse(byte[] response)
-        {
-            float[] audioData = ConvertToAudioData(response);
-            unityContext?.Post(_ => OnResponseGenerated?.Invoke(audioData), null);
-        }
-
         InferenceSession _session;
         string[] _inputNames;
+
+        private ulong _inputIndex = 0;
+        private ulong _nextExpectedIndex = 0;
+        private Dictionary<ulong, byte[]> _responseCache = new Dictionary<ulong, byte[]>();
+
+        public void Reset()
+        {
+            _inputIndex = 0;
+            _nextExpectedIndex = 0;
+            _responseCache.Clear();
+        }
 
         public void InitModel()
         {
@@ -128,6 +134,7 @@ namespace OrpheusTTS
         private class DecodePayload : IBackgroundPayload
         {
             public List<int> Frames;
+            public ulong Index;
         }
 
         public void Decode(List<int> frames)
@@ -145,13 +152,16 @@ namespace OrpheusTTS
                 return;
             }
 
-            if (status != ModelStatus.Ready)
+            if (status != ModelStatus.Ready && status != ModelStatus.Generate)
             {
                 Debug.LogError("invalid status");
                 return;
             }
 
-            RunBackgroundUnchecked(new DecodePayload() { Frames = frames }, RunPrompt);
+            status = ModelStatus.Generate;
+            ulong index = _inputIndex++;
+            _responseCache[index] = null;
+            RunBackgroundUnchecked(new DecodePayload() { Frames = new List<int>(frames), Index = index }, RunPrompt);
         }
 
         protected void RunBackgroundUnchecked<T>(T payload, Action<T, CancellationToken> work) where T : IBackgroundPayload
@@ -207,6 +217,13 @@ namespace OrpheusTTS
                 var codes1Array = codes1List.ToArray();
                 var codes2Array = codes2List.ToArray();
 
+                bool invalid = codes0Array.Any(v => v < 0 || v > 4096) || codes1Array.Any(v => v < 0 || v > 4096) || codes2Array.Any(v => v < 0 || v > 4096);
+                if (invalid)
+                {
+                    PostResponseOrdered(payload.Index, new byte[0]);
+                    return;
+                }
+
                 // --- 2. Define Shapes ---
                 // Shape is [Batch Size, Sequence Length] -> [1, array.Length]
                 int[] shape0 = { 1, codes0Array.Length };
@@ -258,13 +275,42 @@ namespace OrpheusTTS
                     var byteArray = new byte[sliceLength * sizeof(short)];
                     Buffer.BlockCopy(audioInt16, 0, byteArray, 0, byteArray.Length);
 
-                    PostResponse(byteArray);
+                    PostResponseOrdered(payload.Index, byteArray);
                 }
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"An unexpected error occurred: {ex.Message}");
+                PostResponseOrdered(payload.Index, new byte[0]);
             }
+        }
+
+        private void PostResponseOrdered(ulong index, byte[] response)
+        {
+            unityContext?.Post(_ => 
+            {
+                _responseCache[index] = response;
+
+                while (true)
+                {
+                    _responseCache.TryGetValue(_nextExpectedIndex, out byte[] nextResponse);
+                    if (nextResponse == null)
+                    {
+                        break;
+                    }
+
+                    float[] audioData = ConvertToAudioData(nextResponse);
+                    OnResponseGenerated?.Invoke(audioData);
+
+                    _responseCache.Remove(_nextExpectedIndex);
+                    _nextExpectedIndex++;
+                }
+
+                if (_responseCache.Count == 0)
+                {
+                    status = ModelStatus.Ready;
+                }
+            }, null);
         }
     }
 

@@ -1,7 +1,6 @@
 using LlamaCpp;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace OrpheusTTS
@@ -18,8 +17,7 @@ namespace OrpheusTTS
         private SnacDecoder decoder;
         private AudioSource audioSource;
 
-        List<float[]> audioQueue = new List<float[]>();
-        Coroutine audioCoroutine = null;
+        private Queue<float> audioQueue = new Queue<float>();
 
         public delegate void StatusChangedDelegate(ModelStatus status);
         public event StatusChangedDelegate OnStatusChanged;
@@ -95,6 +93,17 @@ namespace OrpheusTTS
 
             status = ModelStatus.Generate;
             orpheus.Prompt(prompt);
+            StartCoroutine(WaitForGenerationAndPlaybackDone());
+        }
+
+        IEnumerator WaitForGenerationAndPlaybackDone()
+        {
+            yield return new WaitUntil(() => orpheus.status == ModelStatus.Ready);
+            yield return new WaitUntil(() => decoder.status == ModelStatus.Ready);
+
+            // Wait for all audio samples to be played
+            yield return new WaitUntil(() => audioQueue.Count == 0);
+            status = ModelStatus.Ready;
         }
 
         // harcoded value from snac decoder
@@ -106,6 +115,10 @@ namespace OrpheusTTS
             orpheus = GetComponentInChildren<OrpheusModel>();
             decoder = GetComponentInChildren<SnacDecoder>();
             audioSource = GetComponent<AudioSource>();
+
+            audioSource.clip = AudioClip.Create("StreamingClip", SampleRate * 60, Channels, SampleRate, true, OnAudioRead);
+            audioSource.loop = true;
+            audioSource.Play();
         }
 
         private void OnEnable()
@@ -129,37 +142,25 @@ namespace OrpheusTTS
             if (status == ModelStatus.Error)
             {
                 StopAllCoroutines();
-                status = ModelStatus.Error;
+                this.status = ModelStatus.Error;
             }
         }
 
         void OnResponseGenerated(float[] audioChunk)
         {
-            audioQueue.Add(audioChunk);
-            
-            if (audioCoroutine == null)
-            {
-                audioCoroutine = StartCoroutine(PlayAudio());
-            }
+            foreach (var s in audioChunk)
+                audioQueue.Enqueue(s);
         }
 
-        IEnumerator PlayAudio()
+        private void OnAudioRead(float[] data)
         {
-            while (audioQueue.Count() > 0)
+            for (int i = 0; i < data.Length; i++)
             {
-                float[] samples = audioQueue[0];
-                AudioClip clip = AudioClip.Create("RawClip", samples.Length / Channels, Channels, SampleRate, false);
-                clip.SetData(samples, 0);
-
-                audioSource.clip = clip;
-                audioSource.Play();
-
-                yield return new WaitWhile(() => audioSource.isPlaying);
-                audioQueue.RemoveAt(0);
+                if (audioQueue.Count > 0)
+                    data[i] = audioQueue.Dequeue();
+                else
+                    data[i] = 0f;
             }
-
-            audioCoroutine = null;
-            status = ModelStatus.Ready;
-        }
+       }
     }
 }

@@ -316,6 +316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tts: {fileID: 467197997}
+  chatHistory: {fileID: 1927735334}
   chatInputField: {fileID: 1728588024}
   sendButton: {fileID: 1513029318}
 --- !u!114 &467197997
