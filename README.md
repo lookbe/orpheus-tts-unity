@@ -63,6 +63,13 @@ You must download the following two models separately:
 
 ---
 
+## ▶️ Demo Video
+
+Watch the demo here:  
+https://www.youtube.com/watch?v=C_OG9O5hsXw
+
+---
+
 ## Testing
 
 1.  **Import Samples:** Go to the Package Manager, select **Orpheus TTS Unity**, and import the **BasicTTS** sample.
