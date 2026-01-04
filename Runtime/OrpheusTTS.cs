@@ -7,11 +7,26 @@ namespace OrpheusTTS
 {
     public class OrpheusTTS : MonoBehaviour
     {
+        enum Voice
+        {
+            tara, 
+            leah, 
+            jess, 
+            leo, 
+            dan, 
+            mia, 
+            zac, 
+            zoe
+        }
+
         [SerializeField]
         private string orpheusModelPath = string.Empty;
 
         [SerializeField]
         private string snacModelPath = string.Empty;
+
+        [SerializeField]
+        private Voice voice = Voice.tara;
 
         private OrpheusModel orpheus;
         private SnacDecoder decoder;
@@ -92,7 +107,7 @@ namespace OrpheusTTS
             }
 
             status = ModelStatus.Generate;
-            orpheus.Prompt(prompt);
+            orpheus.Prompt($"{voice.ToString()}:{prompt}");
             StartCoroutine(WaitForGenerationAndPlaybackDone());
         }
 

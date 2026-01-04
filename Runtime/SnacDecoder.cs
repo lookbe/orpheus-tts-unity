@@ -111,6 +111,11 @@ namespace OrpheusTTS
 
                 var options = new SessionOptions();
                 _session = new InferenceSession(modelPath, options);
+                if (_session == null)
+                {
+                    throw new System.Exception("unable to load model");
+                }
+
                 _inputNames = _session.InputMetadata.Keys.ToArray();
 
                 Debug.Log("Load model done");
