@@ -7,7 +7,7 @@ namespace OrpheusTTS
 {
     public class OrpheusTTS : MonoBehaviour
     {
-        enum Voice
+        public enum Voice
         {
             tara, 
             leah, 
@@ -19,18 +19,13 @@ namespace OrpheusTTS
             zoe
         }
 
-        [SerializeField]
-        private string orpheusModelPath = string.Empty;
+        public string orpheusModelPath = string.Empty;
+        public string snacModelPath = string.Empty;
+        public Voice voice = Voice.tara;
 
-        [SerializeField]
-        private string snacModelPath = string.Empty;
-
-        [SerializeField]
-        private Voice voice = Voice.tara;
-
-        private OrpheusModel orpheus;
-        private SnacDecoder decoder;
-        private AudioSource audioSource;
+        protected OrpheusModel orpheus;
+        protected SnacDecoder decoder;
+        protected AudioSource audioSource;
 
         private Queue<float> audioQueue = new Queue<float>();
 
