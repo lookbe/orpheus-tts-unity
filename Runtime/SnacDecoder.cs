@@ -125,6 +125,12 @@ namespace OrpheusTTS
 
                 Debug.Log("Load model done");
 
+                // Warmup
+                Debug.Log("Warmup model...");
+                var dummyFrames = Enumerable.Repeat(0, 28).ToList();
+                DecodeInternal(dummyFrames, cts);
+                Debug.Log("Warmup done");
+
                 PostStatus(ModelStatus.Ready);
             }
             catch (System.Exception ex)
@@ -197,8 +203,20 @@ namespace OrpheusTTS
 
         void RunDecode(DecodePayload payload, CancellationToken cts)
         {
-            List<int> multiframe = payload.Frames;
+            try
+            {
+                byte[] byteArray = DecodeInternal(payload.Frames, cts);
+                PostResponse(payload.Index, byteArray);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"An unexpected error occurred during RunDecode: {ex.Message}");
+                PostResponse(payload.Index, new byte[0]);
+            }
+        }
 
+        byte[] DecodeInternal(List<int> multiframe, CancellationToken cts)
+        {
             try
             {
                 int numFrames = multiframe.Count / 7;
@@ -234,8 +252,7 @@ namespace OrpheusTTS
                 bool invalid = codes0Array.Any(v => v < 0 || v > 4096) || codes1Array.Any(v => v < 0 || v > 4096) || codes2Array.Any(v => v < 0 || v > 4096);
                 if (invalid)
                 {
-                    PostResponse(payload.Index, new byte[0]);
-                    return;
+                    return new byte[0];
                 }
 
                 // --- 2. Define Shapes ---
@@ -289,13 +306,13 @@ namespace OrpheusTTS
                     var byteArray = new byte[sliceLength * sizeof(short)];
                     Buffer.BlockCopy(audioInt16, 0, byteArray, 0, byteArray.Length);
 
-                    PostResponse(payload.Index, byteArray);
+                    return byteArray;
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"An unexpected error occurred: {ex.Message}");
-                PostResponse(payload.Index, new byte[0]);
+                Debug.LogError($"Inference failed in DecodeInternal: {ex.Message}");
+                return new byte[0];
             }
         }
 
