@@ -183,6 +183,6 @@ namespace OrpheusTTS
                 else
                     data[i] = 0f;
             }
-       }
+        }
     }
 }

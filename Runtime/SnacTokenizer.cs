@@ -57,24 +57,6 @@ namespace OrpheusTTS
 
         void OnBotResponseGenerated(string response)
         {
-            // process leftover tokens
-            if (streamTokenCount > 0)
-            {
-                // Determine how many tokens we need for a final decode.
-                // It must be at least SNAC_CHUNK_SIZE, and streamTokenCount should be a multiple of SNAC_INCREMENT.
-                int targetCount = Math.Max(SNAC_CHUNK_SIZE, ((streamTokenCount + SNAC_INCREMENT - 1) / SNAC_INCREMENT) * SNAC_INCREMENT);
-                
-                while (streamTokenCount < targetCount)
-                {
-                    streamTokenBuffer.Add(0);
-                    streamTokenCount++;
-                }
-
-                // Decode the last chunk
-                List<int> bufferToProc = streamTokenBuffer.GetRange(streamTokenBuffer.Count - SNAC_CHUNK_SIZE, SNAC_CHUNK_SIZE);
-                snac?.Decode(bufferToProc);
-            }
-
             streamTokenBuffer.Clear();
             streamTokenCount = 0;
         }
