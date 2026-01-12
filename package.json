@@ -17,5 +17,10 @@
 	  "displayName": "Basic TTS",
 	  "description": "Shows the basic tts usage.",
 	  "path": "Samples~/BasicTTS"
+    },
+	{
+	  "displayName": "Basic Clone",
+	  "description": "Shows the basic voice cloning.",
+	  "path": "Samples~/BasicClone"
     }]
 }
