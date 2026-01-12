@@ -72,7 +72,6 @@ namespace OrpheusTTS
             {
                 int[] transcript_token = base.Tokenize(inputPayload.Transcript);
 
-                token_list.AddRange(prompt_token);
                 token_list.AddRange(orpheusPrefix);
                 token_list.AddRange(transcript_token);
                 token_list.AddRange(orpheusSuffix);

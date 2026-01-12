@@ -49,11 +49,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelPath: 
   contextLength: 4096
-  temperature: 0.8
+  temperature: 0.4
   topK: 40
   topP: 0.95
   minP: 0.05
-  repeatPenalty: 1.4
+  repeatPenalty: 1.1
 --- !u!114 &1570610994654624687
 MonoBehaviour:
   m_ObjectHideFlags: 0
