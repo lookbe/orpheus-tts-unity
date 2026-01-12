@@ -347,7 +347,6 @@ namespace OrpheusTTS
                 status = ModelStatus.Ready;
             }
         }
-
     }
 
 }

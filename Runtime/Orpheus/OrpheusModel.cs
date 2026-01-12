@@ -5,10 +5,10 @@ namespace OrpheusTTS
     public class OrpheusModel : LlamaCpp.Completion
     {
         // special tokens for orpheus tts
-        int[] orpheusPrefix = new int[] { 128259 };
-        int[] orpheusSuffix = new int[] { 128009, 128260, 128261, 128257 };
+        protected int[] orpheusPrefix = new int[] { 128259 };
+        protected int[] orpheusSuffix = new int[] { 128009, 128260, 128261, 128257 };
 
-        protected override int[] Tokenize(string prompt)
+        public override int[] Tokenize(string prompt)
         {
             var tokens = base.Tokenize(prompt);
 

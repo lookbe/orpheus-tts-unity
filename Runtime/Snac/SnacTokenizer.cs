@@ -7,7 +7,7 @@ namespace OrpheusTTS
 {
     public class SnacTokenizer : MonoBehaviour
     {
-        public OrpheusModel model;
+        public LlamaCpp.Completion model;
         public SnacDecoder snac;
 
         private List<int> streamTokenBuffer = new List<int>();
