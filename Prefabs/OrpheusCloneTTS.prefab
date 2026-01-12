@@ -240,5 +240,5 @@ MonoBehaviour:
   orpheusCloneModelPath: D:/ai/gguf/tts/orpheus-3b-0.1-pt-q8_0.gguf
   snacEncoderModelPath: D:/ai/onnx/snac_24khz/encoder_model.onnx
   snacDecoderModelPath: D:/ai/onnx/snac_24khz/decoder_model.onnx
-  refAudioPath: D:/ai/sample/samueljackson.wav
-  refTranscriptPath: D:/ai/sample/samueljackson.txt
+  refAudioPath: D:/ai/sample/trump.wav
+  refTranscriptPath: D:/ai/sample/trump.txt
