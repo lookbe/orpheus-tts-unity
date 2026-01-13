@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 3059935928824120401}
   - component: {fileID: 1316838134757435353}
   - component: {fileID: 1305576931982552979}
+  - component: {fileID: 6105958501993389966}
   m_Layer: 0
   m_Name: OrpheusCloneTTS
   m_TagString: Untagged
@@ -242,3 +243,16 @@ MonoBehaviour:
   snacDecoderModelPath: D:/ai/onnx/snac_24khz/decoder_model.onnx
   refAudioPath: D:/ai/sample/trump.wav
   refTranscriptPath: D:/ai/sample/trump.txt
+--- !u!114 &6105958501993389966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5724232564459134848}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c06a9670af7de54da047d609b8fe752, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wavFileFolder: D:/ai/sample/
