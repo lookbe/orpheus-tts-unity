@@ -27,13 +27,13 @@ body:
     attributes:
       label: Crash Details
       placeholder: |
-        ## Environment Info
-        - **Model Name:**
-        - **Quantization:** (e.g., Q4_K_M)
-        - **OS:** (e.g., Windows 11, Ubuntu 22.04)
-        - **Hardware:** (e.g., 16GB RAM, RTX 3060)
+        # Environment Info
+        - Model Name:
+        - Quantization: (e.g., Q4_K_M)
+        - OS: (e.g., Windows 11, Ubuntu 22.04)
+        - Hardware: (e.g., 16GB RAM, RTX 3060)
 
-        ## Logs / Screenshots
+        # Logs / Screenshots
         If applicable, add screenshots or paste the terminal error log here.
     validations:
       required: true
