@@ -83,6 +83,14 @@ https://www.youtube.com/watch?v=C_OG9O5hsXw
 
 ---
 
+## 🎙️ Voice Cloning (Experimental)
+
+Orpheus TTS supports experimental voice cloning. This process requires a specific two-step workflow to achieve the best results.
+
+**[Read the Voice Cloning Guide](VOICE_CLONING.md)**
+
+---
+
 # Credits
 
 * **[Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)** Developed by **Canopy AI** – A high-quality text-to-speech engine.

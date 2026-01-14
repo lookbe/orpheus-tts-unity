@@ -92,8 +92,20 @@ namespace OrpheusTTS
 
         void OnResponseGenerated(float[] audioChunk)
         {
-            foreach (var s in audioChunk)
-                audioQueue.Enqueue(s);
+            if (audioChunk == null || audioChunk.Length == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                foreach (var s in audioChunk)
+                    audioQueue.Enqueue(s);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Queue failure: {ex.Message}");
+            }
         }
 
         private void OnAudioRead(float[] data)
