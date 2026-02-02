@@ -40,9 +40,9 @@ namespace OrpheusTTS
             unityContext?.Post(_ => status = newStatus, null);
         }
 
-        async void OnDestroy()
+        void OnDestroy()
         {
-            await BackgroundStop();
+            BackgroundStopSync();
             FreeModel();
         }
 
