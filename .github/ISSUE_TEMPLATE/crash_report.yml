@@ -1,0 +1,39 @@
+name: Crash Report
+description: Report a crash or unexpected termination
+title: "[Crash]: "
+labels: ["bug", "crash"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🛑 Stop! Before you submit
+        Please perform these checks. **If these steps fail, your model file is corrupted, not the library.**
+
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Rules & Verification
+      description: You must complete these steps before submitting.
+      options:
+        - label: I have verified that my local model SHA-256 hash matches the source on Hugging Face.
+          required: true
+        - label: I have tested this model with the [llama-cpp-model-tester](https://github.com/lookbe/llama-cpp-model-tester/releases/latest) and it works fine.
+          required: true
+        - label: I understand that if these checks are not performed, my issue will be closed.
+          required: true
+
+  - type: textarea
+    id: crash_details
+    attributes:
+      label: Crash Details
+      placeholder: |
+        # Environment Info
+        - Model Name:
+        - Quantization: (e.g., Q4_K_M)
+        - OS: (e.g., Windows 11, Ubuntu 22.04)
+        - Hardware: (e.g., 16GB RAM, RTX 3060)
+
+        # Logs / Screenshots
+        If applicable, add screenshots or paste the terminal error log here.
+    validations:
+      required: true
